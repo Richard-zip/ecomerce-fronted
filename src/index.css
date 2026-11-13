@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F5F7FA;
+    color: #1F2933;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    caret-color: #102A43;
+  }
+
+  ::selection {
+    background-color: #102A43;
+    color: #FFFFFF;
+  }
+
+  :focus-visible {
+    outline: 2px solid #102A43;
+    outline-offset: 2px;
+  }
+
+  input, textarea, select {
+    caret-color: #102A43;
+  }
+}
+
+/* Tabular numbers for monetary amounts, counters and metrics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar sutil acorde a la paleta institucional */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F7FA;
+}
+::-webkit-scrollbar-thumb {
+  background: #D9E2EC;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #627D98;
+}
