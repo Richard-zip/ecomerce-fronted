@@ -100,7 +100,7 @@ export const HomePage: React.FC = () => {
       setProducts([]);
       setError(
         err.message ||
-          'No se pudo conectar con el servidor. Verifica que el backend esté ejecutándose en http://localhost:4000'
+          'No se pudo conectar con el servidor.'
       );
     } finally {
       setIsLoading(false);
@@ -129,7 +129,7 @@ export const HomePage: React.FC = () => {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-[#243B53] border border-[#D6A84F]/40 text-[#D6A84F] text-xs font-semibold mb-4">
               <Sparkles size={13} className="text-[#D6A84F]" />
-              <span>Mercado Exclusivo • Centro Tutorial Cereté</span>
+              <span>Mercado • Centro Tutorial Cereté</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
               Compra y vende con compañeros en el <span className="text-[#D6A84F]">Centro Tutorial Cereté</span>
@@ -153,7 +153,7 @@ export const HomePage: React.FC = () => {
                   <span>Explorar por Categoría</span>
                 </h2>
                 <p className="text-xs text-[#627D98]">
-                  Centro Tutorial Cereté • Haz clic en una categoría para filtrar el catálogo
+                 Haz clic en una categoría para filtrar el catálogo
                 </p>
               </div>
               {selectedCategory && (

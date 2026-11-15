@@ -49,7 +49,7 @@ export const LoginPage: React.FC = () => {
     } catch (err: any) {
       setError(
         err.message ||
-          'Credenciales incorrectas o backend fuera de línea.'
+          'Credenciales incorrectas.'
       );
     } finally {
       setIsLoading(false);
@@ -72,7 +72,7 @@ export const LoginPage: React.FC = () => {
             Iniciar Sesión
           </h2>
           <p className="text-xs text-[#627D98] leading-relaxed">
-            Ingresa a tu cuenta estudiantil del Centro Tutorial Cereté con tu correo y contraseña.
+            Ingresa con tu correo y contraseña.
           </p>
         </div>
 
@@ -147,7 +147,7 @@ export const LoginPage: React.FC = () => {
 
         <div className="pt-4 border-t border-[#D9E2EC] text-center space-y-2">
           <p className="text-xs text-[#627D98]">
-            ¿No tienes una cuenta estudiantil?{' '}
+            ¿No tienes una cuenta?{' '}
             <Link to="/register" className="font-bold text-[#102A43] hover:text-[#243B53] underline decoration-[#D6A84F] underline-offset-2">
               Crear cuenta aquí
             </Link>
