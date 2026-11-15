@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Role } from '../types';
 import {
   GraduationCap,
   Lock,
   Mail,
   ArrowRight,
   AlertCircle,
-  ShoppingBag,
-  Store,
-  Sparkles,
   Eye,
   EyeOff,
 } from 'lucide-react';
@@ -22,7 +18,6 @@ export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState<Role>('CLIENTE');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,8 +40,8 @@ export const LoginPage: React.FC = () => {
     }
 
     try {
-      await login({ email: emailTrimmed.toLowerCase(), password, role });
-      if (role === 'VENDEDOR') {
+      const loggedUser = await login({ email: emailTrimmed.toLowerCase(), password });
+      if (loggedUser.role === 'VENDEDOR') {
         navigate('/seller');
       } else {
         navigate('/');
@@ -54,7 +49,7 @@ export const LoginPage: React.FC = () => {
     } catch (err: any) {
       setError(
         err.message ||
-          'Credenciales incorrectas o backend fuera de línea en http://localhost:4000'
+          'Credenciales incorrectas o backend fuera de línea.'
       );
     } finally {
       setIsLoading(false);
@@ -77,7 +72,7 @@ export const LoginPage: React.FC = () => {
             Iniciar Sesión
           </h2>
           <p className="text-xs text-[#627D98] leading-relaxed">
-            Ingresa a tu cuenta estudiantil del Centro Tutorial Cereté. Puedes tener cuenta de comprador y vendedor con tus mismos datos.
+            Ingresa a tu cuenta estudiantil del Centro Tutorial Cereté con tu correo y contraseña.
           </p>
         </div>
 
@@ -89,51 +84,6 @@ export const LoginPage: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Selector de Modalidad (Comprador o Vendedor) */}
-          <div>
-            <label className="block text-xs font-semibold text-[#1F2933] mb-1.5 flex items-center justify-between">
-              <span>Ingresar en modalidad:</span>
-              <span className="text-[10px] text-[#627D98]">Mismos datos para ambos</span>
-            </label>
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => setRole('CLIENTE')}
-                className={`p-2.5 rounded-[8px] border text-left transition-all ${
-                  role === 'CLIENTE'
-                    ? 'border-[#102A43] bg-[#F0F4F8] text-[#102A43] ring-1 ring-[#102A43]'
-                    : 'border-[#D9E2EC] bg-[#FFFFFF] text-[#627D98] hover:bg-[#F5F7FA]'
-                }`}
-              >
-                <div className="flex items-center gap-1.5 font-bold text-xs">
-                  <ShoppingBag size={14} className={role === 'CLIENTE' ? 'text-[#102A43]' : 'text-[#627D98]'} />
-                  <span>Comprador</span>
-                </div>
-                <span className="text-[10px] text-[#627D98] mt-0.5 block leading-tight">
-                  Reservar en campus
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRole('VENDEDOR')}
-                className={`p-2.5 rounded-[8px] border text-left transition-all ${
-                  role === 'VENDEDOR'
-                    ? 'border-[#102A43] bg-[#F0F4F8] text-[#102A43] ring-1 ring-[#102A43]'
-                    : 'border-[#D9E2EC] bg-[#FFFFFF] text-[#627D98] hover:bg-[#F5F7FA]'
-                }`}
-              >
-                <div className="flex items-center gap-1.5 font-bold text-xs">
-                  <Store size={14} className={role === 'VENDEDOR' ? 'text-[#D6A84F]' : 'text-[#627D98]'} />
-                  <span>Vendedor</span>
-                </div>
-                <span className="text-[10px] text-[#627D98] mt-0.5 block leading-tight">
-                  Publicar artículos
-                </span>
-              </button>
-            </div>
-          </div>
-
           <div>
             <label className="block text-xs font-semibold text-[#1F2933] mb-1.5">
               Correo Electrónico
@@ -190,16 +140,16 @@ export const LoginPage: React.FC = () => {
             disabled={isLoading}
             className="w-full h-11 bg-[#102A43] hover:bg-[#243B53] text-[#FFFFFF] font-semibold text-sm rounded-[8px] shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#102A43] focus:ring-offset-2"
           >
-            <span>{isLoading ? 'Comprobando credenciales...' : `Entrar como ${role === 'VENDEDOR' ? 'Vendedor' : 'Comprador'}`}</span>
+            <span>{isLoading ? 'Comprobando credenciales...' : 'Iniciar Sesión'}</span>
             <ArrowRight size={16} className="text-[#D6A84F]" />
           </button>
         </form>
 
         <div className="pt-4 border-t border-[#D9E2EC] text-center space-y-2">
           <p className="text-xs text-[#627D98]">
-            ¿No tienes cuenta de {role === 'VENDEDOR' ? 'vendedor' : 'comprador'}?{' '}
+            ¿No tienes una cuenta estudiantil?{' '}
             <Link to="/register" className="font-bold text-[#102A43] hover:text-[#243B53] underline decoration-[#D6A84F] underline-offset-2">
-              Crear con tus mismos datos
+              Crear cuenta aquí
             </Link>
           </p>
         </div>

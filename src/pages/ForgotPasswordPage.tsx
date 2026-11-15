@@ -11,12 +11,9 @@ import {
   CheckCircle2,
   AlertCircle,
   GraduationCap,
-  ShoppingBag,
-  Store,
   RefreshCw,
 } from 'lucide-react';
 import { authService } from '../services/auth.service';
-import { Role } from '../types';
 
 export const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +23,6 @@ export const ForgotPasswordPage: React.FC = () => {
 
   // Formulario
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<Role | undefined>(undefined);
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -50,7 +46,6 @@ export const ForgotPasswordPage: React.FC = () => {
     try {
       const res = await authService.forgotPassword({
         email: email.trim(),
-        role: role,
       });
 
       setSuccessInfo(res.message || 'Código enviado exitosamente a tu correo.');
@@ -71,7 +66,6 @@ export const ForgotPasswordPage: React.FC = () => {
     try {
       const res = await authService.forgotPassword({
         email: email.trim(),
-        role: role,
       });
       setSuccessInfo(`Nuevo código enviado: ${res.message || 'Revisa tu bandeja de entrada.'}`);
     } catch (err: any) {
@@ -110,7 +104,6 @@ export const ForgotPasswordPage: React.FC = () => {
         email: email.trim(),
         code: cleanCode,
         newPassword,
-        role: role,
       });
 
       setStep(3);
@@ -206,45 +199,6 @@ export const ForgotPasswordPage: React.FC = () => {
                   className="w-full h-11 pl-10 pr-4 bg-[#FFFFFF] border border-[#D9E2EC] rounded-[8px] text-sm text-[#1F2933] placeholder-[#9FB3C8] focus:outline-none focus:ring-2 focus:ring-[#102A43] focus:border-[#102A43] transition-all"
                   required
                 />
-              </div>
-            </div>
-
-            {/* Modalidad opcional */}
-            <div>
-              <label className="block text-xs font-semibold text-[#1F2933] mb-1.5 flex items-center justify-between">
-                <span>Modalidad de cuenta (opcional):</span>
-                <span className="text-[10px] text-[#627D98]">Si tienes ambas cuentas</span>
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setRole(role === 'CLIENTE' ? undefined : 'CLIENTE')}
-                  className={`p-2 rounded-[8px] border text-left transition-all ${
-                    role === 'CLIENTE'
-                      ? 'border-[#102A43] bg-[#F0F4F8] text-[#102A43] ring-1 ring-[#102A43]'
-                      : 'border-[#D9E2EC] bg-[#FFFFFF] text-[#627D98] hover:bg-[#F5F7FA]'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 font-bold text-xs">
-                    <ShoppingBag size={14} className={role === 'CLIENTE' ? 'text-[#102A43]' : 'text-[#627D98]'} />
-                    <span>Comprador</span>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setRole(role === 'VENDEDOR' ? undefined : 'VENDEDOR')}
-                  className={`p-2 rounded-[8px] border text-left transition-all ${
-                    role === 'VENDEDOR'
-                      ? 'border-[#102A43] bg-[#F0F4F8] text-[#102A43] ring-1 ring-[#102A43]'
-                      : 'border-[#D9E2EC] bg-[#FFFFFF] text-[#627D98] hover:bg-[#F5F7FA]'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 font-bold text-xs">
-                    <Store size={14} className={role === 'VENDEDOR' ? 'text-[#D6A84F]' : 'text-[#627D98]'} />
-                    <span>Vendedor</span>
-                  </div>
-                </button>
               </div>
             </div>
 

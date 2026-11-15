@@ -14,35 +14,15 @@ import {
   ChevronDown,
   Store,
   Plus,
-  ArrowLeftRight,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { user, isAuthenticated, isSeller, logout, switchRole } = useAuth();
+  const { user, isAuthenticated, isSeller, logout } = useAuth();
   const { totalCount } = useCart();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [isSwitching, setIsSwitching] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const handleSwitchMode = async (targetRole: 'CLIENTE' | 'VENDEDOR') => {
-    setIsSwitching(true);
-    try {
-      await switchRole(targetRole);
-      setIsProfileDropdownOpen(false);
-      setIsMenuOpen(false);
-      if (targetRole === 'VENDEDOR') {
-        navigate('/seller');
-      } else {
-        navigate('/');
-      }
-    } catch (err) {
-      console.error('Error al cambiar de modalidad:', err);
-    } finally {
-      setIsSwitching(false);
-    }
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -267,41 +247,6 @@ export const Navbar: React.FC = () => {
                       </Link>
                     </div>
 
-                    {/* Cambio rápido de perfil (Mismos datos para Vendedor y Comprador) */}
-                    <div className="border-t border-[#D9E2EC] py-1 bg-[#F8FAFC]">
-                      {isSeller ? (
-                        <button
-                          type="button"
-                          onClick={() => handleSwitchMode('CLIENTE')}
-                          disabled={isSwitching}
-                          className="w-full flex min-h-11 items-center gap-3 px-4 text-xs font-semibold text-[#102A43] hover:bg-[#F0F4F8] transition-colors text-left"
-                        >
-                          <div className="w-5 flex justify-center shrink-0">
-                            <ShoppingBag size={16} className="text-[#102A43]" />
-                          </div>
-                          <div className="flex flex-col min-w-0">
-                            <span>{isSwitching ? 'Cambiando de cuenta...' : 'Cambiar a Estudiante Comprador'}</span>
-                            <span className="text-[10px] text-[#627D98] font-normal truncate">Mismo correo y datos</span>
-                          </div>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleSwitchMode('VENDEDOR')}
-                          disabled={isSwitching}
-                          className="w-full flex min-h-11 items-center gap-3 px-4 text-xs font-semibold text-[#102A43] hover:bg-[#F0F4F8] transition-colors text-left"
-                        >
-                          <div className="w-5 flex justify-center shrink-0">
-                            <Store size={16} className="text-[#D6A84F]" />
-                          </div>
-                          <div className="flex flex-col min-w-0">
-                            <span>{isSwitching ? 'Cambiando de cuenta...' : 'Cambiar a Estudiante Vendedor'}</span>
-                            <span className="text-[10px] text-[#627D98] font-normal truncate">Mismo correo y datos</span>
-                          </div>
-                        </button>
-                      )}
-                    </div>
-
                     {/* Separación y Cierre de Sesión con rojo reservado */}
                     <div className="border-t border-[#D9E2EC] py-1">
                       <button
@@ -432,19 +377,6 @@ export const Navbar: React.FC = () => {
                 >
                   Mi Perfil Universitario
                 </Link>
-                {/* Botón cambiar modalidad en móvil */}
-                <button
-                  type="button"
-                  onClick={() => handleSwitchMode(isSeller ? 'CLIENTE' : 'VENDEDOR')}
-                  disabled={isSwitching}
-                  className="w-full text-left px-3 py-2 rounded-[8px] text-xs font-bold text-[#D6A84F] bg-[#102A43] border border-[#334E68] flex items-center justify-between"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <ArrowLeftRight size={14} />
-                    <span>{isSeller ? 'Cambiar a Estudiante Comprador' : 'Cambiar a Estudiante Vendedor'}</span>
-                  </span>
-                  <span className="text-[10px] text-[#9FB3C8] font-normal">Mismos datos</span>
-                </button>
 
                 <button
                   onClick={() => {

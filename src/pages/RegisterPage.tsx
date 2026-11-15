@@ -178,7 +178,7 @@ export const RegisterPage: React.FC = () => {
             Crear Cuenta Estudiantil
           </h2>
           <p className="text-sm text-[#627D98] leading-relaxed">
-            Regístrate en el Centro Tutorial Cereté. Puedes tener ambas cuentas (Comprador y Vendedor) usando tus mismos datos.
+            Regístrate en CampusMarket Cereté con tu correo y datos de contacto.
           </p>
         </div>
 
@@ -194,10 +194,10 @@ export const RegisterPage: React.FC = () => {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xs font-semibold text-[#1F2933]">
-                Tipo de Cuenta a Crear
+                Tipo de Cuenta Universitaria
               </label>
-              <span className="text-[10px] text-[#2F855A] font-semibold">
-                ✓ Mismos datos permitidos
+              <span className="text-[10px] text-[#627D98] font-medium">
+                Selecciona tu rol
               </span>
             </div>
             <div className="grid grid-cols-2 gap-3">

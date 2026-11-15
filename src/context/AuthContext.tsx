@@ -9,7 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isSeller: boolean;
   isBuyer: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
   register: (payload: RegisterPayload) => Promise<void>;
   switchRole: (targetRole: Role) => Promise<void>;
   logout: () => void;
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadProfile();
   }, [loadProfile]);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = async (credentials: LoginCredentials): Promise<User> => {
     setIsLoading(true);
     try {
       const data = await authService.login(credentials);
@@ -58,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('user', JSON.stringify(data.user));
       setToken(data.token);
       setUser(data.user);
+      return data.user;
     } finally {
       setIsLoading(false);
     }

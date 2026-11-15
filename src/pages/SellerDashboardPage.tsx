@@ -358,31 +358,40 @@ export const SellerDashboardPage: React.FC = () => {
           <div>
             <h3 className="text-lg font-bold text-[#102A43]">Acceso a Panel de Vendedor</h3>
             <span className="text-[11px] font-bold text-[#8C6517] bg-[#FBF5EA] border border-[#D6A84F] px-2.5 py-0.5 rounded-[6px] inline-block mt-1">
-              Modo actual: Estudiante Comprador
+              Cuenta actual: Estudiante Comprador
             </span>
           </div>
           <p className="text-xs text-[#627D98] leading-relaxed">
-            Puedes tener tus cuentas de <strong>Comprador</strong> y <strong>Vendedor</strong> con tu mismo correo y datos ({user?.email}). Haz clic abajo para activar o ingresar a tu modalidad de vendedor.
+            Tu cuenta estudiantil está registrada actualmente como <strong>Comprador</strong>. Para poder publicar artículos y coordinar ventas en el Centro Tutorial Cereté, puedes activar el rol de <strong>Vendedor</strong> en tu cuenta.
           </p>
 
-          <button
-            type="button"
-            onClick={async () => {
-              setIsActivatingSeller(true);
-              try {
-                await switchRole('VENDEDOR');
-              } catch (err) {
-                console.error('Error switching to vendor:', err);
-              } finally {
-                setIsActivatingSeller(false);
-              }
-            }}
-            disabled={isActivatingSeller}
-            className="w-full h-11 bg-[#102A43] hover:bg-[#243B53] text-white font-semibold text-xs rounded-[8px] shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <Store size={15} className="text-[#D6A84F]" />
-            <span>{isActivatingSeller ? 'Activando modalidad vendedor...' : 'Activar / Entrar a Modo Vendedor'}</span>
-          </button>
+          <div className="space-y-2 pt-2">
+            <button
+              type="button"
+              onClick={async () => {
+                setIsActivatingSeller(true);
+                try {
+                  await switchRole('VENDEDOR');
+                } catch (err) {
+                  console.error('Error switching to vendor:', err);
+                } finally {
+                  setIsActivatingSeller(false);
+                }
+              }}
+              disabled={isActivatingSeller}
+              className="w-full h-11 bg-[#102A43] hover:bg-[#243B53] text-white font-semibold text-xs rounded-[8px] shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Store size={15} className="text-[#D6A84F]" />
+              <span>{isActivatingSeller ? 'Activando rol vendedor...' : 'Cambiar mi cuenta a Modo Vendedor'}</span>
+            </button>
+
+            <Link
+              to="/"
+              className="w-full h-10 bg-transparent hover:bg-[#F0F4F8] text-[#627D98] hover:text-[#102A43] font-medium text-xs rounded-[8px] transition-colors border border-[#D9E2EC] flex items-center justify-center"
+            >
+              Regresar al catálogo estudiantil
+            </Link>
+          </div>
         </div>
       </div>
     );
