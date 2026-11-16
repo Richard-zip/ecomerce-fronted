@@ -48,3 +48,222 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #627D98;
 }
+
+/* ==========================================================================
+   ESTILOS GLOBAIS DE MODO OSCURO (CampusMarket Dark Palette)
+   Fondo lienzo: #0B1523 (Azul noche profundo)
+   Superficie tarjetas: #102438 (Azul marino institucional elevado)
+   Superficie sutil: #152E46 (Azul marino intermedio para hover/pills)
+   Bordes: #243B53 (Azul secundario con contraste óptimo)
+   Acentos: #D6A84F (Dorado institucional)
+   Texto principal: #F0F4F8
+   Texto secundario: #9FB3C8
+   ========================================================================== */
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0B1523;
+  color: #F0F4F8;
+  caret-color: #D6A84F;
+}
+
+html.dark ::selection {
+  background-color: #243B53;
+  color: #FFFFFF;
+}
+
+html.dark :focus-visible {
+  outline: 2px solid #D6A84F;
+  outline-offset: 2px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0B1523;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #243B53;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334E68;
+}
+
+/* Superficies principales (Tarjetas, modales, menús flotantes, contenedores) */
+html.dark .bg-\[\#FFFFFF\],
+html.dark .bg-white {
+  background-color: #102438 !important;
+}
+
+html.dark .bg-white\/90,
+html.dark .bg-white\/95 {
+  background-color: rgba(16, 36, 56, 0.95) !important;
+}
+
+html.dark .bg-white\/80 {
+  background-color: rgba(16, 36, 56, 0.8) !important;
+}
+
+html.dark .bg-\[\#F5F7FA\] {
+  background-color: #0B1523 !important;
+}
+
+html.dark .bg-\[\#F8FAFC\],
+html.dark .bg-\[\#F0F4F8\] {
+  background-color: #152E46 !important;
+}
+
+html.dark .bg-\[\#E2E8F0\] {
+  background-color: #1D3D5D !important;
+}
+
+/* Efectos hover en superficies */
+html.dark .hover\:bg-\[\#F5F7FA\]:hover {
+  background-color: #152E46 !important;
+}
+
+html.dark .hover\:bg-\[\#F0F4F8\]:hover {
+  background-color: #1D3D5D !important;
+}
+
+html.dark .hover\:bg-\[\#E2E8F0\]:hover {
+  background-color: #24476E !important;
+}
+
+html.dark .hover\:bg-\[\#FFFFFF\]:hover,
+html.dark .hover\:bg-white:hover {
+  background-color: #152E46 !important;
+}
+
+html.dark .hover\:bg-\[\#D9E2EC\]:hover {
+  background-color: #243B53 !important;
+}
+
+/* Bordes y divisores */
+html.dark .border-\[\#D9E2EC\],
+html.dark .border-\[\#E2E8F0\],
+html.dark .border-line {
+  border-color: #243B53 !important;
+}
+
+html.dark .divide-\[\#D9E2EC\] > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-\[\#F0F4F8\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #243B53 !important;
+}
+
+/* Tipografía y colores de texto */
+html.dark .text-\[\#1F2933\] {
+  color: #F0F4F8 !important;
+}
+
+html.dark .text-\[\#627D98\] {
+  color: #9FB3C8 !important;
+}
+
+/* Encabezados y textos que en modo claro usaban azul marino oscuro:
+   En modo oscuro se aclaran para alto contraste, EXCEPTO cuando están sobre botones/fondos dorados (#D6A84F) */
+html.dark .text-\[\#102A43\] {
+  color: #F0F4F8 !important;
+}
+
+html.dark .text-\[\#243B53\] {
+  color: #D9E2EC !important;
+}
+
+/* Preservar texto oscuro en botones y etiquetas doradas */
+html.dark .bg-\[\#D6A84F\],
+html.dark .bg-\[\#D6A84F\] .text-\[\#102A43\],
+html.dark .bg-\[\#D6A84F\] *.text-\[\#102A43\],
+html.dark [class*="bg-[#D6A84F]"] .text-\[\#102A43\],
+html.dark [class*="bg-[#D6A84F]"].text-\[\#102A43\] {
+  color: #102A43 !important;
+}
+
+/* Hover de textos y bordes */
+html.dark .hover\:text-\[\#102A43\]:hover {
+  color: #D6A84F !important;
+}
+
+html.dark .hover\:text-\[\#1F2933\]:hover {
+  color: #FFFFFF !important;
+}
+
+html.dark .hover\:border-\[\#102A43\]:hover {
+  border-color: #D6A84F !important;
+}
+
+/* Controles de formulario (Inputs, Textareas, Selects) */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+html.dark textarea,
+html.dark select {
+  background-color: #102438 !important;
+  border-color: #243B53 !important;
+  color: #F0F4F8 !important;
+  caret-color: #D6A84F !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #627D98 !important;
+}
+
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: #D6A84F !important;
+  outline-color: #D6A84F !important;
+  --tw-ring-color: #D6A84F !important;
+}
+
+/* Banners y Badges semánticos adaptados a modo oscuro */
+html.dark .bg-\[\#FDE8E8\] {
+  background-color: rgba(197, 48, 48, 0.18) !important;
+  border-color: rgba(197, 48, 48, 0.4) !important;
+  color: #FC8181 !important;
+}
+
+html.dark .text-\[\#C53030\] {
+  color: #FC8181 !important;
+}
+
+html.dark .border-\[\#F8B4B4\] {
+  border-color: rgba(252, 129, 129, 0.35) !important;
+}
+
+html.dark .bg-\[\#EAF5EE\],
+html.dark .bg-\[\#DEF7EC\] {
+  background-color: rgba(47, 133, 90, 0.2) !important;
+  border-color: rgba(104, 211, 145, 0.35) !important;
+  color: #68D391 !important;
+}
+
+html.dark .text-\[\#2F855A\] {
+  color: #68D391 !important;
+}
+
+html.dark .border-\[\#B4E0C4\] {
+  border-color: rgba(104, 211, 145, 0.35) !important;
+}
+
+html.dark .bg-\[\#FBF5EA\] {
+  background-color: rgba(214, 168, 79, 0.18) !important;
+  border-color: rgba(214, 168, 79, 0.4) !important;
+  color: #F6E05E !important;
+}
+
+html.dark .text-\[\#8C6517\] {
+  color: #F6E05E !important;
+}
+
+/* Sombras en modo oscuro */
+html.dark .shadow-sm,
+html.dark .shadow-xs {
+  box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.4), 0 1px 3px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-2xl {
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6) !important;
+}

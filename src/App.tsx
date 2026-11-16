@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { Navbar } from './components/common/Navbar';
@@ -21,12 +22,13 @@ import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <div className="min-h-screen flex flex-col bg-[#F5F7FA] text-[#1F2933] antialiased font-sans">
-            {/* Navbar */}
-            <Navbar />
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <CartProvider>
+            <div className="min-h-screen flex flex-col bg-[#F5F7FA] dark:bg-[#0B1523] text-[#1F2933] dark:text-[#E2E8F0] antialiased font-sans transition-colors duration-150">
+              {/* Navbar */}
+              <Navbar />
 
             {/* Main view container */}
             <main className="flex-1">
@@ -79,7 +81,8 @@ export const App: React.FC = () => {
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
-  );
+  </ThemeProvider>
+);
 };
 
 export default App;

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { ThemeToggle } from './ThemeToggle';
 import {
   GraduationCap,
   ShoppingBag,
@@ -106,7 +107,10 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Actions & Profile */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+            {/* Theme Toggle (Claro / Oscuro / Sistema) */}
+            <ThemeToggle />
+
             {/* Cart Button (excluido para perfiles de vendedor) */}
             {!isSeller && (
               <Link
@@ -281,7 +285,8 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu trigger & cart button */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex md:hidden items-center gap-1.5">
+            <ThemeToggle />
             {!isSeller && (
               <Link
                 to="/cart"
@@ -409,6 +414,14 @@ export const Navbar: React.FC = () => {
                 </Link>
               </div>
             )}
+
+            {/* Selector de tema visual para móvil */}
+            <div className="pt-3 border-t border-[#243B53] space-y-1.5">
+              <span className="block text-[11px] font-semibold text-[#9FB3C8] px-1">
+                Modo visual
+              </span>
+              <ThemeToggle variant="segmented" />
+            </div>
           </div>
         </div>
       )}
