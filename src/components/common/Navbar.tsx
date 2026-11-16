@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { ThemeToggle } from './ThemeToggle';
 import {
-  GraduationCap,
   ShoppingBag,
   User as UserIcon,
   LogOut,
@@ -62,8 +61,12 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-[8px] bg-[#243B53] border border-[#334E68] flex items-center justify-center text-[#D6A84F] transition-colors group-hover:border-[#D6A84F]">
-              <GraduationCap size={20} />
+            <div className="w-9 h-9 rounded-[8px] bg-white border border-[#334E68] flex items-center justify-center overflow-hidden transition-all group-hover:border-[#D6A84F] shadow-sm shrink-0">
+              <img
+                src="/icon.png"
+                alt="CampusMarket"
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+              />
             </div>
             <div>
               <span className="font-bold text-lg tracking-tight text-[#FFFFFF]">

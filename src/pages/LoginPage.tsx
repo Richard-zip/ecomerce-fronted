@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  GraduationCap,
   Lock,
   Mail,
   ArrowRight,
@@ -62,8 +61,8 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-[440px] bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-8 shadow-sm space-y-6">
         {/* Logotipo y Nombre de la tienda */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-[8px] bg-[#102A43] border border-[#243B53] flex items-center justify-center text-[#D6A84F] mx-auto shadow-sm">
-            <GraduationCap size={26} />
+          <div className="w-12 h-12 rounded-[10px] bg-white border border-[#D9E2EC] flex items-center justify-center mx-auto shadow-sm overflow-hidden">
+            <img src="/icon.png" alt="CampusMarket" className="w-full h-full object-cover" />
           </div>
           <span className="block text-xs font-bold uppercase tracking-wider text-[#627D98]">
             Campus<span className="text-[#D6A84F]">Market</span> • Cereté

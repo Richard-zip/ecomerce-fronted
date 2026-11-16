@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export const NotFoundPage: React.FC = () => {
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 text-center">
       <div className="max-w-md space-y-5 bg-[#FFFFFF] p-8 rounded-[12px] border border-[#D9E2EC] shadow-sm">
-        <div className="w-16 h-16 bg-[#F0F4F8] text-[#102A43] rounded-[8px] flex items-center justify-center mx-auto border border-[#D9E2EC]">
-          <GraduationCap size={36} />
+        <div className="w-16 h-16 rounded-[12px] bg-white border border-[#D9E2EC] flex items-center justify-center mx-auto shadow-sm overflow-hidden">
+          <img src="/icon.png" alt="CampusMarket" className="w-full h-full object-cover" />
         </div>
         <h1 className="text-4xl font-bold text-[#102A43]">404</h1>
         <h2 className="text-lg font-bold text-[#1F2933]">Página no encontrada en el campus</h2>
