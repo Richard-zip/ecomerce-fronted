@@ -86,6 +86,12 @@ export const Footer: React.FC = () => {
               >
                 Explorar productos
               </Link>
+              <Link
+                to="/requests"
+                className="hover:text-white transition-colors"
+              >
+                Mural Estudiantil
+              </Link>
               <a
                 href="#como-funciona"
                 onClick={(e) => {

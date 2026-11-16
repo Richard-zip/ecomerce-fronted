@@ -79,10 +79,11 @@ export const Navbar: React.FC = () => {
           <nav className="hidden md:flex items-center gap-3">
             <Link
               to="/requests"
-              className="text-xs font-semibold text-[#D9E2EC] hover:text-[#FFFFFF] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] hover:bg-[#243B53] border border-transparent hover:border-[#334E68]"
+              className="text-xs font-semibold text-[#D9E2EC] hover:text-[#FFFFFF] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] hover:bg-[#243B53] border border-transparent hover:border-[#334E68] group"
+              title="Mural de solicitudes y peticiones estudiantiles"
             >
-              <Compass size={15} className="text-[#D6A84F]" />
-              <span>Mural "Se Busca"</span>
+              <Compass size={15} className="text-[#D6A84F] group-hover:rotate-45 transition-transform" />
+              <span>Mural Estudiantil</span>
             </Link>
 
             {isAuthenticated && isSeller && (
@@ -344,10 +345,15 @@ export const Navbar: React.FC = () => {
             <Link
               to="/requests"
               onClick={() => setIsMenuOpen(false)}
-              className="block px-3 py-2 rounded-[8px] text-sm font-semibold text-[#D6A84F] bg-[#163350] border border-[#334E68] flex items-center gap-2 mb-2"
+              className="px-3 py-2.5 rounded-[8px] text-xs font-semibold text-white bg-[#1A3654] hover:bg-[#243B53] border border-[#334E68] flex items-center justify-between mb-2 transition-colors"
             >
-              <Compass size={16} />
-              <span>Mural "¿Qué Buscas en Campus?"</span>
+              <div className="flex items-center gap-2">
+                <Compass size={16} className="text-[#D6A84F]" />
+                <span>Mural Estudiantil</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#102A43] text-[#D6A84F] border border-[#D6A84F]/30">
+                Peticiones
+              </span>
             </Link>
 
             {isAuthenticated && isSeller && (

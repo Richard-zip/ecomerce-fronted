@@ -7,6 +7,7 @@ import { Product, Category, ProductCondition } from '../types';
 import { ProductCard } from '../components/products/ProductCard';
 import { ProductFilter } from '../components/products/ProductFilter';
 import { ProductGridSkeleton } from '../components/common/LoadingSkeleton';
+import { MuralShowcase } from '../components/common/MuralShowcase';
 import { parseCOP } from '../utils/format';
 import {
   Sparkles,
@@ -225,6 +226,9 @@ export const HomePage: React.FC = () => {
             </div>
           </section>
         )}
+
+        {/* Mural Estudiantil Showcase */}
+        <MuralShowcase />
 
         {/* Filters and Search Bar */}
         <ProductFilter
