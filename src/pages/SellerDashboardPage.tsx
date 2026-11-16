@@ -36,6 +36,8 @@ import {
   Eye,
   LayoutGrid,
   List,
+  Search,
+  X,
   Store,
   BarChart3,
   TrendingUp,
@@ -53,7 +55,24 @@ export const SellerDashboardPage: React.FC = () => {
   const [isActivatingSeller, setIsActivatingSeller] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'analytics'>('products');
-  const [viewLayout, setViewLayout] = useState<'grid' | 'list'>('grid');
+  const [viewLayout, setViewLayout] = useState<'grid' | 'list'>(() => {
+    try {
+      const saved = localStorage.getItem('campusmarket_seller_view');
+      return saved === 'list' || saved === 'grid' ? saved : 'grid';
+    } catch {
+      return 'grid';
+    }
+  });
+  const [productFilter, setProductFilter] = useState('');
+
+  const handleViewLayoutChange = (layout: 'grid' | 'list') => {
+    setViewLayout(layout);
+    try {
+      localStorage.setItem('campusmarket_seller_view', layout);
+    } catch {
+      // ignore
+    }
+  };
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -415,8 +434,20 @@ export const SellerDashboardPage: React.FC = () => {
   const pendingOrdersCount = orders.filter((o) => o.status === 'PENDING').length;
   const deliveredOrdersCount = orders.filter((o) => o.status === 'DELIVERED').length;
 
+  // Filtrado de productos para el inventario
+  const filteredProducts = products.filter((p) => {
+    if (!productFilter.trim()) return true;
+    const q = productFilter.toLowerCase().trim();
+    return (
+      p.title.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      (p.category && p.category.name.toLowerCase().includes(q)) ||
+      (p.meetingPoint && p.meetingPoint.toLowerCase().includes(q))
+    );
+  });
+
   return (
-    <div className="min-h-[85vh] bg-[#F5F7FA] py-8">
+    <div className="min-h-[85vh] bg-[#F5F7FA] dark:bg-[#0B1523] py-8 transition-colors duration-150">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Layout en Escritorio: Barra lateral azul marino de ancho fijo (#102A43) y área principal */}
         <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -522,14 +553,14 @@ export const SellerDashboardPage: React.FC = () => {
             {/* Encabezado con título en azul marino (#102A43), descripción en texto secundario (#627D98) y acciones */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
               <div>
-                <h1 className="text-2xl font-bold text-[#102A43] tracking-tight">
+                <h1 className="text-2xl font-bold text-[#102A43] dark:text-white tracking-tight">
                   {activeTab === 'products'
                     ? 'Inventario de Productos'
                     : activeTab === 'orders'
                     ? 'Pedidos y Entregas en Cereté'
                     : 'Panel de Analíticas & Balance Financiero'}
                 </h1>
-                <p className="text-sm text-[#627D98] mt-0.5">
+                <p className="text-sm text-[#627D98] dark:text-[#9FB3C8] mt-0.5">
                   {activeTab === 'products'
                     ? 'Gestiona tus publicaciones, precios en COP y stock para la sede.'
                     : activeTab === 'orders'
@@ -548,7 +579,7 @@ export const SellerDashboardPage: React.FC = () => {
                 </button>
                 <button
                   onClick={loadDashboardData}
-                  className="h-10 w-10 bg-[#FFFFFF] border border-[#D9E2EC] hover:bg-[#F5F7FA] text-[#627D98] hover:text-[#102A43] rounded-[8px] shadow-sm transition-colors flex items-center justify-center"
+                  className="h-10 w-10 bg-[#FFFFFF] dark:bg-[#1E293B] border border-[#D9E2EC] dark:border-[#334E68] hover:bg-[#F5F7FA] dark:hover:bg-[#243B53] text-[#627D98] dark:text-[#9FB3C8] hover:text-[#102A43] dark:hover:text-white rounded-[8px] shadow-sm transition-colors flex items-center justify-center"
                   title="Actualizar datos"
                 >
                   <RefreshCw size={15} className={isLoading ? 'animate-spin' : ''} />
@@ -556,31 +587,31 @@ export const SellerDashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* TARJETAS BLANCAS CON BORDE #D9E2EC PARA MÉTRICAS */}
+            {/* TARJETAS CON BORDE #D9E2EC PARA MÉTRICAS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-sm space-y-1">
-                <span className="text-xs font-semibold text-[#627D98]">Publicaciones Activas</span>
-                <p className="text-2xl font-bold text-[#102A43] tabular-nums">{products.length}</p>
-                <span className="text-[11px] text-[#627D98] block">Disponibles en catálogo</span>
+              <div className="bg-[#FFFFFF] dark:bg-[#1E293B] rounded-[12px] border border-[#D9E2EC] dark:border-[#334E68] p-5 shadow-sm space-y-1">
+                <span className="text-xs font-semibold text-[#627D98] dark:text-[#9FB3C8]">Publicaciones Activas</span>
+                <p className="text-2xl font-bold text-[#102A43] dark:text-white tabular-nums">{products.length}</p>
+                <span className="text-[11px] text-[#627D98] dark:text-[#9FB3C8] block">Disponibles en catálogo</span>
               </div>
 
-              <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-sm space-y-1">
-                <span className="text-xs font-semibold text-[#627D98]">Pedidos Pendientes</span>
-                <p className="text-2xl font-bold text-[#102A43] flex items-center gap-2">
+              <div className="bg-[#FFFFFF] dark:bg-[#1E293B] rounded-[12px] border border-[#D9E2EC] dark:border-[#334E68] p-5 shadow-sm space-y-1">
+                <span className="text-xs font-semibold text-[#627D98] dark:text-[#9FB3C8]">Pedidos Pendientes</span>
+                <p className="text-2xl font-bold text-[#102A43] dark:text-white flex items-center gap-2">
                   <span className="tabular-nums">{pendingOrdersCount}</span>
                   {pendingOrdersCount > 0 && (
-                    <span className="text-xs font-bold text-[#8C6517] bg-[#FBF5EA] border border-[#D6A84F] px-2 py-0.5 rounded-[6px]">
+                    <span className="text-xs font-bold text-[#8C6517] dark:text-[#D6A84F] bg-[#FBF5EA] dark:bg-[#D6A84F]/10 border border-[#D6A84F] px-2 py-0.5 rounded-[6px]">
                       Por entregar
                     </span>
                   )}
                 </p>
-                <span className="text-[11px] text-[#627D98] block">Por coordinar en Cereté</span>
+                <span className="text-[11px] text-[#627D98] dark:text-[#9FB3C8] block">Por coordinar en Cereté</span>
               </div>
 
-              <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-sm space-y-1">
-                <span className="text-xs font-semibold text-[#627D98]">Ventas Completadas</span>
-                <p className="text-2xl font-bold text-[#2F855A] tabular-nums">{deliveredOrdersCount}</p>
-                <span className="text-[11px] text-[#627D98] block">Entregadas con éxito</span>
+              <div className="bg-[#FFFFFF] dark:bg-[#1E293B] rounded-[12px] border border-[#D9E2EC] dark:border-[#334E68] p-5 shadow-sm space-y-1">
+                <span className="text-xs font-semibold text-[#627D98] dark:text-[#9FB3C8]">Ventas Completadas</span>
+                <p className="text-2xl font-bold text-[#2F855A] dark:text-[#48BB78] tabular-nums">{deliveredOrdersCount}</p>
+                <span className="text-[11px] text-[#627D98] dark:text-[#9FB3C8] block">Entregadas con éxito</span>
               </div>
             </div>
 
@@ -595,207 +626,376 @@ export const SellerDashboardPage: React.FC = () => {
             {activeTab === 'products' && (
               <div className="space-y-4">
                 {/* Header de la sección de productos con selector de vista (Tarjetas / Lista) */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#D9E2EC] pb-3">
-                  <div className="flex items-center gap-2">
-                    <Package size={18} className="text-[#102A43]" />
-                    <span className="text-sm font-bold text-[#102A43]">
-                      Inventario en exhibición ({products.length})
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#D9E2EC] dark:border-[#334E68] pb-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Package size={18} className="text-[#102A43] dark:text-[#D6A84F]" />
+                    <span className="text-sm font-bold text-[#102A43] dark:text-white">
+                      Inventario en exhibición
+                    </span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#F0F4F8] dark:bg-[#243B53] text-[#627D98] dark:text-[#9FB3C8]">
+                      {products.length} {products.length === 1 ? 'producto' : 'productos'}
                     </span>
                   </div>
 
-                  {products.length > 0 && (
-                    <div className="flex items-center gap-1 p-1 bg-[#F0F4F8] rounded-[8px] border border-[#D9E2EC]">
+                  <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+                    {/* Búsqueda rápida si hay productos */}
+                    {products.length > 2 && (
+                      <div className="relative flex-1 sm:w-52">
+                        <Search
+                          size={13}
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#627D98] dark:text-[#9FB3C8] pointer-events-none"
+                        />
+                        <input
+                          type="text"
+                          value={productFilter}
+                          onChange={(e) => setProductFilter(e.target.value)}
+                          placeholder="Buscar producto..."
+                          className="w-full h-8 pl-7 pr-7 text-xs bg-white dark:bg-[#1E293B] border border-[#D9E2EC] dark:border-[#334E68] rounded-[6px] text-[#1F2933] dark:text-white placeholder-[#9FB3C8] focus:outline-none focus:ring-1 focus:ring-[#102A43] dark:focus:ring-[#D6A84F]"
+                        />
+                        {productFilter && (
+                          <button
+                            type="button"
+                            onClick={() => setProductFilter('')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9FB3C8] hover:text-[#102A43] dark:hover:text-white p-0.5"
+                            title="Limpiar búsqueda"
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Selector de formato: Tarjeta o Lista */}
+                    <div
+                      role="group"
+                      aria-label="Formato de visualización de productos"
+                      className="inline-flex items-center p-1 bg-[#F0F4F8] dark:bg-[#0B1523] rounded-[8px] border border-[#D9E2EC] dark:border-[#334E68] shadow-2xs"
+                    >
                       <button
                         type="button"
-                        onClick={() => setViewLayout('grid')}
-                        className={`px-3 py-1.5 rounded-[6px] text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                        onClick={() => handleViewLayoutChange('grid')}
+                        aria-pressed={viewLayout === 'grid'}
+                        className={`px-3 py-1.5 rounded-[6px] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                           viewLayout === 'grid'
-                            ? 'bg-[#102A43] text-white shadow-xs'
-                            : 'text-[#627D98] hover:text-[#102A43]'
+                            ? 'bg-[#102A43] text-white shadow-xs dark:bg-[#D6A84F] dark:text-[#102A43]'
+                            : 'text-[#627D98] dark:text-[#9FB3C8] hover:text-[#102A43] dark:hover:text-white'
                         }`}
-                        title="Vista en tarjetas (Grid)"
+                        title="Formato de tarjetas (cuadrícula)"
                       >
                         <LayoutGrid size={14} />
                         <span>Tarjetas</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => setViewLayout('list')}
-                        className={`px-3 py-1.5 rounded-[6px] text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                        onClick={() => handleViewLayoutChange('list')}
+                        aria-pressed={viewLayout === 'list'}
+                        className={`px-3 py-1.5 rounded-[6px] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                           viewLayout === 'list'
-                            ? 'bg-[#102A43] text-white shadow-xs'
-                            : 'text-[#627D98] hover:text-[#102A43]'
+                            ? 'bg-[#102A43] text-white shadow-xs dark:bg-[#D6A84F] dark:text-[#102A43]'
+                            : 'text-[#627D98] dark:text-[#9FB3C8] hover:text-[#102A43] dark:hover:text-white'
                         }`}
-                        title="Vista en lista"
+                        title="Formato de lista"
                       >
                         <List size={14} />
                         <span>Lista</span>
                       </button>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {isLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="h-56 bg-slate-200 rounded-[12px]" />
-                    ))}
-                  </div>
-                ) : products.length > 0 ? (
                   viewLayout === 'grid' ? (
-                    /* VISTA EN TARJETAS (CARDS) */
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {products.map((p) => (
+                    /* SKELETON EN TARJETAS */
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-pulse">
+                      {Array.from({ length: 3 }).map((_, i) => (
                         <div
-                          key={p.id}
-                          className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] shadow-sm overflow-hidden flex flex-col justify-between hover:border-[#102A43]/40 transition-colors"
+                          key={i}
+                          className="bg-white dark:bg-[#1E293B] rounded-[14px] border border-[#D9E2EC] dark:border-[#334E68] overflow-hidden"
                         >
-                          <div>
-                            <div className="relative aspect-16/10 bg-[#F5F7FA] overflow-hidden border-b border-[#D9E2EC]">
-                              <img
-                                src={
-                                  p.images && p.images[0]
-                                    ? p.images[0]
-                                    : 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400'
-                                }
-                                alt={p.title}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute top-2.5 left-2.5">
-                                <ConditionBadge condition={p.condition} />
-                              </div>
-                              <div className="absolute top-2.5 right-2.5 bg-[#102A43]/85 text-white text-[10px] font-bold px-2 py-0.5 rounded-[6px]">
-                                Stock: {p.stock}
-                              </div>
-                            </div>
-
-                            <div className="p-4 space-y-2">
-                              <h4 className="font-bold text-[#1F2933] text-sm line-clamp-1">{p.title}</h4>
-                              <p className="text-xs text-[#627D98] line-clamp-2 leading-relaxed">{p.description}</p>
-                              <div className="flex items-center justify-between pt-2">
-                                <span className="text-base font-bold text-[#102A43] tabular-nums">
-                                  {formatCOP(p.price)}
-                                </span>
-                                <span className="text-[11px] text-[#627D98] flex items-center gap-1">
-                                  <MapPin size={11} className="text-[#102A43]" />
-                                  <span className="truncate max-w-[130px]">{p.meetingPoint || OFFICIAL_CAMPUS}</span>
-                                </span>
-                              </div>
-                            </div>
+                          <div className="aspect-16/10 bg-slate-200 dark:bg-[#243B53]" />
+                          <div className="p-4 space-y-3">
+                            <div className="h-4 bg-slate-200 dark:bg-[#243B53] rounded w-3/4" />
+                            <div className="h-3 bg-slate-200 dark:bg-[#243B53] rounded w-full" />
+                            <div className="h-5 bg-slate-200 dark:bg-[#243B53] rounded w-1/3 pt-2" />
                           </div>
-
-                          <div className="p-3 bg-[#F5F7FA] border-t border-[#D9E2EC] flex items-center gap-2">
-                            <Link
-                              to={`/products/${p.id}`}
-                              className="h-8 px-2.5 bg-[#FFFFFF] hover:bg-[#F5F7FA] border border-[#D9E2EC] rounded-[8px] text-xs font-semibold text-[#102A43] flex items-center justify-center gap-1 transition-colors"
-                              title="Ver vista pública"
-                            >
-                              <Eye size={13} />
-                            </Link>
-                            <button
-                              type="button"
-                              onClick={() => openEditModal(p)}
-                              className="flex-1 h-8 bg-[#FFFFFF] hover:bg-[#F5F7FA] border border-[#D9E2EC] rounded-[8px] text-xs font-semibold text-[#102A43] flex items-center justify-center gap-1.5 transition-colors"
-                            >
-                              <Edit2 size={13} /> Editar
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenDeleteModal(p.id)}
-                              className="h-8 px-3 bg-[#FDE8E8] hover:bg-[#F8B4B4] text-[#C53030] rounded-[8px] text-xs font-semibold flex items-center justify-center transition-colors"
-                              title="Eliminar producto"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
+                          <div className="p-3 bg-slate-100 dark:bg-[#0B1523] h-12" />
                         </div>
                       ))}
                     </div>
                   ) : (
-                    /* VISTA EN LISTA (HORIZONTAL ROWS) */
-                    <div className="space-y-3">
-                      {products.map((p) => (
+                    /* SKELETON EN LISTA */
+                    <div className="space-y-3 animate-pulse">
+                      {Array.from({ length: 3 }).map((_, i) => (
                         <div
-                          key={p.id}
-                          className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-4 shadow-sm hover:border-[#102A43]/40 transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                          key={i}
+                          className="bg-white dark:bg-[#1E293B] rounded-[12px] border border-[#D9E2EC] dark:border-[#334E68] p-4 flex items-center justify-between gap-4"
                         >
-                          <div className="flex items-center gap-4 flex-1 min-w-0">
-                            <div className="relative w-20 h-20 rounded-[8px] overflow-hidden bg-[#F5F7FA] border border-[#D9E2EC] shrink-0">
-                              <img
-                                src={
-                                  p.images && p.images[0]
-                                    ? p.images[0]
-                                    : 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300'
-                                }
-                                alt={p.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-
-                            <div className="space-y-1 min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <ConditionBadge condition={p.condition} />
-                                {p.category && (
-                                  <span className="text-[11px] font-semibold text-[#102A43] bg-[#F0F4F8] px-2 py-0.5 rounded-[4px]">
-                                    {p.category.name}
-                                  </span>
-                                )}
-                              </div>
-                              <h4 className="font-bold text-[#1F2933] text-sm truncate">{p.title}</h4>
-                              <p className="text-xs text-[#627D98] line-clamp-1">{p.description}</p>
-                              <div className="flex items-center gap-1 text-[11px] text-[#627D98]">
-                                <MapPin size={11} className="text-[#102A43]" />
-                                <span className="truncate">{p.meetingPoint || OFFICIAL_CAMPUS}</span>
-                              </div>
+                          <div className="flex items-center gap-4 flex-1">
+                            <div className="w-20 h-20 rounded-[8px] bg-slate-200 dark:bg-[#243B53] shrink-0" />
+                            <div className="space-y-2 flex-1">
+                              <div className="h-4 bg-slate-200 dark:bg-[#243B53] rounded w-1/3" />
+                              <div className="h-3 bg-slate-200 dark:bg-[#243B53] rounded w-1/2" />
+                              <div className="h-3 bg-slate-200 dark:bg-[#243B53] rounded w-1/4" />
                             </div>
                           </div>
-
-                          <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#D9E2EC]">
-                            <div className="text-left sm:text-right">
-                              <span className="text-base font-bold text-[#102A43] tabular-nums block">
-                                {formatCOP(p.price)}
-                              </span>
-                              <span className="text-[11px] text-[#627D98] block">
-                                {p.stock <= 0 ? 'Agotado' : `Stock: ${p.stock}`}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <Link
-                                to={`/products/${p.id}`}
-                                className="h-8 px-2.5 bg-[#FFFFFF] hover:bg-[#F5F7FA] text-[#102A43] border border-[#D9E2EC] font-semibold text-xs rounded-[6px] shadow-sm flex items-center gap-1 transition-colors shrink-0"
-                                title="Ver vista pública"
-                              >
-                                <Eye size={13} />
-                              </Link>
-                              <button
-                                type="button"
-                                onClick={() => openEditModal(p)}
-                                className="h-8 px-3 bg-[#FFFFFF] hover:bg-[#F5F7FA] text-[#102A43] border border-[#D9E2EC] font-semibold text-xs rounded-[6px] shadow-sm flex items-center gap-1 transition-colors shrink-0"
-                              >
-                                <Edit2 size={13} /> Editar
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleOpenDeleteModal(p.id)}
-                                className="h-8 px-2.5 bg-[#FDE8E8] hover:bg-[#F8B4B4] text-[#C53030] font-semibold text-xs rounded-[6px] flex items-center justify-center transition-colors shrink-0"
-                                title="Eliminar producto"
-                              >
-                                <Trash2 size={13} />
-                              </button>
-                            </div>
-                          </div>
+                          <div className="w-32 h-8 bg-slate-200 dark:bg-[#243B53] rounded" />
                         </div>
                       ))}
                     </div>
                   )
+                ) : products.length > 0 ? (
+                  filteredProducts.length > 0 ? (
+                    viewLayout === 'grid' ? (
+                      /* VISTA EN FORMATO DE TARJETA (GRID) */
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {filteredProducts.map((p) => {
+                          const isOutOfStock = p.stock <= 0;
+                          const isLowStock = p.stock > 0 && p.stock <= 2;
+                          const mainImg =
+                            p.images && p.images[0]
+                              ? p.images[0]
+                              : 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500';
+
+                          return (
+                            <div
+                              key={p.id}
+                              className="group bg-white dark:bg-[#1E293B] rounded-[14px] border border-[#D9E2EC] dark:border-[#334E68] shadow-sm hover:shadow-md hover:border-[#102A43]/40 dark:hover:border-[#D6A84F]/50 transition-all duration-200 overflow-hidden flex flex-col justify-between"
+                            >
+                              <div>
+                                {/* Imagen de cabecera con badges */}
+                                <div className="relative aspect-16/10 bg-[#F5F7FA] dark:bg-[#0B1523] overflow-hidden border-b border-[#D9E2EC] dark:border-[#334E68]">
+                                  <img
+                                    src={mainImg}
+                                    alt={p.title}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                  />
+                                  {/* Badges superiores izquierda */}
+                                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
+                                    <ConditionBadge condition={p.condition} />
+                                    {p.category && (
+                                      <span className="backdrop-blur-md bg-white/90 dark:bg-[#102A43]/90 text-[#102A43] dark:text-[#D6A84F] text-[10px] font-bold px-2 py-0.5 rounded-[4px] shadow-xs">
+                                        {p.category.name}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {/* Badge de stock */}
+                                  <div className="absolute top-2.5 right-2.5">
+                                    {isOutOfStock ? (
+                                      <span className="bg-[#C53030] text-white text-[10px] font-bold px-2 py-0.5 rounded-[6px] shadow-xs">
+                                        Agotado
+                                      </span>
+                                    ) : isLowStock ? (
+                                      <span className="bg-[#D6A84F] text-[#102A43] text-[10px] font-bold px-2 py-0.5 rounded-[6px] shadow-xs">
+                                        Bajo stock: {p.stock}
+                                      </span>
+                                    ) : (
+                                      <span className="bg-[#102A43]/85 dark:bg-[#0B1523]/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-[6px] shadow-xs">
+                                        Stock: {p.stock}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {/* Contador de imágenes */}
+                                  {p.images && p.images.length > 1 && (
+                                    <div className="absolute bottom-2 right-2.5 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-1.5 py-0.5 rounded-[4px]">
+                                      {p.images.length} fotos
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Cuerpo de la tarjeta */}
+                                <div className="p-4 space-y-2">
+                                  <h4 className="font-bold text-[#1F2933] dark:text-white text-sm line-clamp-1 group-hover:text-[#102A43] dark:group-hover:text-[#D6A84F] transition-colors">
+                                    {p.title}
+                                  </h4>
+                                  <p className="text-xs text-[#627D98] dark:text-[#9FB3C8] line-clamp-2 leading-relaxed">
+                                    {p.description}
+                                  </p>
+                                  <div className="flex items-center justify-between pt-1">
+                                    <span className="text-lg font-bold text-[#102A43] dark:text-[#D6A84F] tabular-nums">
+                                      {formatCOP(p.price)}
+                                    </span>
+                                    <span className="text-[11px] text-[#627D98] dark:text-[#9FB3C8] flex items-center gap-1">
+                                      <MapPin size={11} className="text-[#D6A84F] shrink-0" />
+                                      <span className="truncate max-w-[130px]">
+                                        {p.meetingPoint || OFFICIAL_CAMPUS}
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Barra inferior de acciones */}
+                              <div className="p-3 bg-[#F5F7FA] dark:bg-[#0B1523]/50 border-t border-[#D9E2EC] dark:border-[#334E68] flex items-center gap-2">
+                                <Link
+                                  to={`/products/${p.id}`}
+                                  className="h-8 px-2.5 bg-white dark:bg-[#1E293B] hover:bg-[#F0F4F8] dark:hover:bg-[#243B53] border border-[#D9E2EC] dark:border-[#334E68] rounded-[8px] text-xs font-semibold text-[#102A43] dark:text-white flex items-center justify-center gap-1 transition-colors shadow-2xs"
+                                  title="Ver vista pública del producto"
+                                >
+                                  <Eye size={13} />
+                                  <span className="hidden sm:inline">Ver</span>
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() => openEditModal(p)}
+                                  className="flex-1 h-8 bg-white dark:bg-[#1E293B] hover:bg-[#F0F4F8] dark:hover:bg-[#243B53] border border-[#D9E2EC] dark:border-[#334E68] rounded-[8px] text-xs font-semibold text-[#102A43] dark:text-white flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                                >
+                                  <Edit2 size={13} />
+                                  <span>Editar</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenDeleteModal(p.id)}
+                                  className="h-8 px-3 bg-[#FDE8E8] dark:bg-[#7F1D1D]/30 hover:bg-[#F8B4B4] dark:hover:bg-[#7F1D1D]/50 text-[#C53030] dark:text-[#F87171] border border-transparent dark:border-[#991B1B]/40 rounded-[8px] text-xs font-semibold flex items-center justify-center transition-colors shadow-2xs"
+                                  title="Eliminar producto"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* VISTA EN FORMATO DE LISTA (ROWS) */
+                      <div className="space-y-3">
+                        {filteredProducts.map((p) => {
+                          const isOutOfStock = p.stock <= 0;
+                          const isLowStock = p.stock > 0 && p.stock <= 2;
+                          const mainImg =
+                            p.images && p.images[0]
+                              ? p.images[0]
+                              : 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300';
+
+                          return (
+                            <div
+                              key={p.id}
+                              className="group bg-white dark:bg-[#1E293B] rounded-[12px] border border-[#D9E2EC] dark:border-[#334E68] p-3.5 sm:p-4 shadow-sm hover:border-[#102A43]/40 dark:hover:border-[#D6A84F]/50 hover:shadow-md transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                            >
+                              {/* Lado izquierdo: Thumbnail + Información principal */}
+                              <div className="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
+                                <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-[10px] overflow-hidden bg-[#F5F7FA] dark:bg-[#0B1523] border border-[#D9E2EC] dark:border-[#334E68] shrink-0 group-hover:border-[#D6A84F] transition-colors">
+                                  <img
+                                    src={mainImg}
+                                    alt={p.title}
+                                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                    loading="lazy"
+                                  />
+                                  {p.images && p.images.length > 1 && (
+                                    <span className="absolute bottom-1 right-1 bg-black/70 text-[9px] font-medium text-white px-1 rounded">
+                                      {p.images.length}
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1.5 min-w-0 flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <ConditionBadge condition={p.condition} />
+                                    {p.category && (
+                                      <span className="text-[11px] font-semibold text-[#102A43] dark:text-[#D6A84F] bg-[#F0F4F8] dark:bg-[#243B53] px-2 py-0.5 rounded-[4px]">
+                                        {p.category.name}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h4 className="font-bold text-[#1F2933] dark:text-white text-sm truncate group-hover:text-[#102A43] dark:group-hover:text-[#D6A84F] transition-colors">
+                                    {p.title}
+                                  </h4>
+                                  <p className="text-xs text-[#627D98] dark:text-[#9FB3C8] line-clamp-1">
+                                    {p.description}
+                                  </p>
+                                  <div className="flex items-center gap-1.5 text-[11px] text-[#627D98] dark:text-[#9FB3C8]">
+                                    <MapPin size={11} className="text-[#D6A84F] shrink-0" />
+                                    <span className="truncate">{p.meetingPoint || OFFICIAL_CAMPUS}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Lado derecho: Precio, Stock e Interacciones */}
+                              <div className="flex flex-col sm:flex-row md:flex-row items-stretch sm:items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-[#D9E2EC] dark:border-[#334E68] shrink-0">
+                                {/* Precio y estado de stock */}
+                                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 min-w-[120px]">
+                                  <span className="text-base font-bold text-[#102A43] dark:text-[#D6A84F] tabular-nums">
+                                    {formatCOP(p.price)}
+                                  </span>
+                                  {isOutOfStock ? (
+                                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#FDE8E8] dark:bg-[#7F1D1D]/30 text-[#C53030] dark:text-[#F87171] border border-[#F8B4B4] dark:border-[#991B1B]/40">
+                                      Agotado
+                                    </span>
+                                  ) : isLowStock ? (
+                                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#FBF5EA] dark:bg-[#78350F]/30 text-[#8C6517] dark:text-[#FBBF24] border border-[#D6A84F]/50">
+                                      Bajo stock: {p.stock}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#DEF7EC] dark:bg-[#064E3B]/30 text-[#03543F] dark:text-[#34D399] border border-[#BCF0DA] dark:border-[#059669]/40">
+                                      {p.stock} disponibles
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Botones de acción */}
+                                <div className="flex items-center gap-2">
+                                  <Link
+                                    to={`/products/${p.id}`}
+                                    className="h-8 px-2.5 bg-white dark:bg-[#243B53] hover:bg-[#F5F7FA] dark:hover:bg-[#334E68] text-[#102A43] dark:text-white border border-[#D9E2EC] dark:border-[#334E68] font-semibold text-xs rounded-[8px] shadow-2xs flex items-center justify-center gap-1 transition-colors"
+                                    title="Ver vista pública"
+                                  >
+                                    <Eye size={13} />
+                                    <span className="hidden lg:inline">Ver</span>
+                                  </Link>
+                                  <button
+                                    type="button"
+                                    onClick={() => openEditModal(p)}
+                                    className="h-8 px-3 bg-white dark:bg-[#243B53] hover:bg-[#F5F7FA] dark:hover:bg-[#334E68] text-[#102A43] dark:text-white border border-[#D9E2EC] dark:border-[#334E68] font-semibold text-xs rounded-[8px] shadow-2xs flex items-center justify-center gap-1.5 transition-colors"
+                                  >
+                                    <Edit2 size={13} />
+                                    <span>Editar</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenDeleteModal(p.id)}
+                                    className="h-8 px-2.5 bg-[#FDE8E8] dark:bg-[#7F1D1D]/30 hover:bg-[#F8B4B4] dark:hover:bg-[#7F1D1D]/50 text-[#C53030] dark:text-[#F87171] border border-transparent dark:border-[#991B1B]/40 font-semibold text-xs rounded-[8px] flex items-center justify-center transition-colors shadow-2xs"
+                                    title="Eliminar producto"
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )
+                  ) : (
+                    /* Búsqueda sin resultados */
+                    <div className="p-10 text-center bg-white dark:bg-[#1E293B] rounded-[12px] border border-dashed border-[#D9E2EC] dark:border-[#334E68] max-w-md mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-[8px] bg-[#F0F4F8] dark:bg-[#0B1523] text-[#627D98] dark:text-[#9FB3C8] flex items-center justify-center mx-auto">
+                        <Search size={22} />
+                      </div>
+                      <h3 className="text-sm font-bold text-[#102A43] dark:text-white">
+                        Sin resultados para "{productFilter}"
+                      </h3>
+                      <p className="text-xs text-[#627D98] dark:text-[#9FB3C8]">
+                        No encontramos publicaciones que coincidan con los términos de búsqueda.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setProductFilter('')}
+                        className="px-4 py-2 bg-[#102A43] hover:bg-[#243B53] text-white text-xs font-semibold rounded-[8px] shadow-sm transition-all"
+                      >
+                        Limpiar búsqueda
+                      </button>
+                    </div>
+                  )
                 ) : (
-                  <div className="p-10 text-center bg-[#FFFFFF] rounded-[12px] border border-dashed border-[#D9E2EC] max-w-md mx-auto space-y-3">
-                    <div className="w-12 h-12 rounded-[8px] bg-[#F0F4F8] text-[#102A43] flex items-center justify-center mx-auto">
+                  /* Sin productos publicados */
+                  <div className="p-10 text-center bg-[#FFFFFF] dark:bg-[#1E293B] rounded-[12px] border border-dashed border-[#D9E2EC] dark:border-[#334E68] max-w-md mx-auto space-y-3">
+                    <div className="w-12 h-12 rounded-[8px] bg-[#F0F4F8] dark:bg-[#0B1523] text-[#102A43] dark:text-[#D6A84F] flex items-center justify-center mx-auto">
                       <Package size={24} />
                     </div>
-                    <h3 className="text-sm font-bold text-[#102A43]">No tienes productos publicados</h3>
-                    <p className="text-xs text-[#627D98]">
+                    <h3 className="text-sm font-bold text-[#102A43] dark:text-white">
+                      No tienes productos publicados
+                    </h3>
+                    <p className="text-xs text-[#627D98] dark:text-[#9FB3C8]">
                       Publica libros, calculadoras o materiales para vender en el Centro Tutorial Cereté.
                     </p>
                     <button
