@@ -190,3 +190,113 @@ export interface WhatsAppCheckoutResult {
   quantity: number;
   meetingPoint: string;
 }
+
+export type RequestStatus = 'OPEN' | 'RESOLVED' | 'CLOSED';
+
+export interface RequestOffer {
+  id: string;
+  message: string;
+  price?: number | null;
+  productId?: string | null;
+  requestId: string;
+  sellerId: string;
+  createdAt: string;
+  seller: {
+    id: string;
+    name: string;
+    avatar?: string | null;
+    phone?: string | null;
+    whatsapp?: string | null;
+    career?: string | null;
+  };
+  product?: {
+    id: string;
+    title: string;
+    price: number;
+    images: string[];
+    status: ProductStatus;
+  } | null;
+}
+
+export interface StudentRequest {
+  id: string;
+  title: string;
+  description: string;
+  maxBudget?: number | null;
+  career?: string | null;
+  campus?: string | null;
+  status: RequestStatus;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+    avatar?: string | null;
+    career?: string | null;
+    campus?: string | null;
+    role?: Role;
+    phone?: string | null;
+    whatsapp?: string | null;
+  };
+  offers: RequestOffer[];
+  _count?: {
+    offers: number;
+  };
+}
+
+export interface RequestsResponse {
+  requests: StudentRequest[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface SellerAnalytics {
+  totalDeliveredRevenue: number;
+  potentialRevenue: number;
+  totalOrders: number;
+  ordersByStatus: {
+    PENDING: number;
+    CONFIRMED: number;
+    DELIVERED: number;
+    CANCELLED: number;
+  };
+  deliveredRate: number;
+  averageOrderValue: number;
+  salesByMonth: Array<{
+    label: string;
+    revenue: number;
+    ordersCount: number;
+  }>;
+  topProducts: Array<{
+    id: string;
+    title: string;
+    images: string[];
+    unitsSold: number;
+    revenue: number;
+    currentStock: number;
+    status: ProductStatus;
+  }>;
+  inventoryHealth: {
+    totalProducts: number;
+    available: number;
+    soldOut: number;
+    paused: number;
+    totalStockUnits: number;
+  };
+  reviewsStats: {
+    totalReviews: number;
+    averageRating: number;
+    ratingBreakdown: {
+      5: number;
+      4: number;
+      3: number;
+      2: number;
+      1: number;
+    };
+  };
+}

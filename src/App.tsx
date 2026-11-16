@@ -18,6 +18,7 @@ import { CartPage } from './pages/CartPage';
 import { MyPurchasesPage } from './pages/MyPurchasesPage';
 import { SellerDashboardPage } from './pages/SellerDashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { RequestsPage } from './pages/RequestsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
@@ -36,6 +37,10 @@ export const App: React.FC = () => {
                 <Routes>
                   {/* Catálogo e Inicio */}
                   <Route path="/" element={<HomePage />} />
+
+                  {/* Mural Se Busca / Peticiones Estudiantiles */}
+                  <Route path="/requests" element={<RequestsPage />} />
+                  <Route path="/se-busca" element={<Navigate to="/requests" replace />} />
 
                   {/* Detalle de Producto (plural y singular) */}
                   <Route path="/products/:id" element={<ProductDetailPage />} />

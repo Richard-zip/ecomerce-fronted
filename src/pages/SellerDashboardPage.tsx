@@ -5,7 +5,7 @@ import { productsService } from '../services/products.service';
 import { ordersService } from '../services/orders.service';
 import { categoriesService } from '../services/categories.service';
 import { usersService } from '../services/users.service';
-import { Product, Order, Category, ProductCondition, OrderStatus } from '../types';
+import { Product, Order, Category, ProductCondition, OrderStatus, SellerAnalytics } from '../types';
 import { ConditionBadge, OrderStatusBadge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
 import { ConfirmModal } from '../components/common/ConfirmModal';
@@ -37,6 +37,14 @@ import {
   LayoutGrid,
   List,
   Store,
+  BarChart3,
+  TrendingUp,
+  Award,
+  Star,
+  Printer,
+  PieChart,
+  Coins,
+  Percent,
 } from 'lucide-react';
 
 export const SellerDashboardPage: React.FC = () => {
@@ -44,11 +52,12 @@ export const SellerDashboardPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isActivatingSeller, setIsActivatingSeller] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'analytics'>('products');
   const [viewLayout, setViewLayout] = useState<'grid' | 'list'>('grid');
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [analytics, setAnalytics] = useState<SellerAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,14 +84,19 @@ export const SellerDashboardPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const [prods, ords, cats] = await Promise.all([
+      const [prods, ords, cats, anlyt] = await Promise.all([
         productsService.getMyProducts(),
         ordersService.getSellerOrders(),
         categoriesService.getCategories(),
+        ordersService.getSellerAnalytics().catch((e) => {
+          console.warn('Error fetching analytics:', e);
+          return null;
+        }),
       ]);
       setProducts(Array.isArray(prods) ? prods : []);
       setOrders(Array.isArray(ords) ? ords : []);
       setCategories(Array.isArray(cats) ? cats : []);
+      if (anlyt) setAnalytics(anlyt);
       if (Array.isArray(cats) && cats.length > 0 && !categoryId) {
         setCategoryId(cats[0].id);
       }
@@ -472,6 +486,23 @@ export const SellerDashboardPage: React.FC = () => {
                   )}
                 </div>
               </button>
+
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`w-full text-left px-3.5 py-2.5 rounded-[8px] text-xs font-semibold transition-all flex items-center justify-between ${
+                  activeTab === 'analytics'
+                    ? 'bg-[#243B53] text-[#FFFFFF] shadow-sm ring-1 ring-[#D6A84F]/30'
+                    : 'text-[#D9E2EC] hover:bg-[#243B53]/60'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <BarChart3 size={16} className={activeTab === 'analytics' ? 'text-[#D6A84F]' : 'text-[#9FB3C8]'} />
+                  <span>Analíticas & Balance</span>
+                </div>
+                {activeTab === 'analytics' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D6A84F]" aria-hidden="true" />
+                )}
+              </button>
             </nav>
 
             {/* Acción rápida publicar */}
@@ -492,12 +523,18 @@ export const SellerDashboardPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
               <div>
                 <h1 className="text-2xl font-bold text-[#102A43] tracking-tight">
-                  {activeTab === 'products' ? 'Inventario de Productos' : 'Pedidos y Entregas en Cereté'}
+                  {activeTab === 'products'
+                    ? 'Inventario de Productos'
+                    : activeTab === 'orders'
+                    ? 'Pedidos y Entregas en Cereté'
+                    : 'Panel de Analíticas & Balance Financiero'}
                 </h1>
                 <p className="text-sm text-[#627D98] mt-0.5">
                   {activeTab === 'products'
                     ? 'Gestiona tus publicaciones, precios en COP y stock para la sede.'
-                    : 'Supervisa y confirma los pedidos solicitados por compañeros universitarios.'}
+                    : activeTab === 'orders'
+                    ? 'Supervisa y confirma los pedidos solicitados por compañeros universitarios.'
+                    : 'Rendimiento en tiempo real de ingresos, rotación de artículos y efectividad en campus.'}
                 </p>
               </div>
 
@@ -907,6 +944,402 @@ export const SellerDashboardPage: React.FC = () => {
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* TAB 3: ANALÍTICAS Y BALANCE FINANCIERO */}
+            {activeTab === 'analytics' && (
+              <div className="space-y-6">
+                {/* Barra de Acciones del Reporte */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#D9E2EC] pb-3">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 size={18} className="text-[#102A43]" />
+                    <span className="text-sm font-bold text-[#102A43]">
+                      Rendimiento de Ventas & Balance en Campus
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      className="h-9 px-3 bg-[#FFFFFF] border border-[#D9E2EC] hover:bg-[#F5F7FA] text-[#102A43] text-xs font-semibold rounded-[8px] shadow-2xs transition-colors flex items-center gap-1.5"
+                      title="Imprimir balance o guardar como PDF"
+                    >
+                      <Printer size={14} className="text-[#627D98]" />
+                      <span>Imprimir / PDF</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={loadDashboardData}
+                      className="h-9 px-3 bg-[#102A43] hover:bg-[#243B53] text-white text-xs font-semibold rounded-[8px] shadow-2xs transition-colors flex items-center gap-1.5"
+                    >
+                      <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+                      <span>Actualizar Métricas</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* KPI HIGHLIGHTS CARDS (4 Columnas) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Total Cobrado / Entregado */}
+                  <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#627D98]">Ingresos Realizados</span>
+                      <div className="w-7 h-7 rounded-[6px] bg-[#EAF5EE] text-[#2F855A] flex items-center justify-center">
+                        <Coins size={15} />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-[#2F855A] tabular-nums tracking-tight">
+                      {formatCOP(analytics?.totalDeliveredRevenue || 0)}
+                    </p>
+                    <span className="text-[11px] text-[#627D98] block">
+                      {analytics?.ordersByStatus.DELIVERED || 0} entregas finalizadas
+                    </span>
+                  </div>
+
+                  {/* En Curso / Potencial */}
+                  <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#627D98]">Por Cobrar (En Curso)</span>
+                      <div className="w-7 h-7 rounded-[6px] bg-[#FBF5EA] text-[#8C6517] flex items-center justify-center">
+                        <Clock size={15} />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-[#102A43] tabular-nums tracking-tight">
+                      {formatCOP(analytics?.potentialRevenue || 0)}
+                    </p>
+                    <span className="text-[11px] text-[#627D98] block">
+                      {(analytics?.ordersByStatus.PENDING || 0) + (analytics?.ordersByStatus.CONFIRMED || 0)} pedidos por coordinar
+                    </span>
+                  </div>
+
+                  {/* Ticket Promedio */}
+                  <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#627D98]">Ticket Promedio</span>
+                      <div className="w-7 h-7 rounded-[6px] bg-[#F0F4F8] text-[#102A43] flex items-center justify-center">
+                        <TrendingUp size={15} />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-[#102A43] tabular-nums tracking-tight">
+                      {formatCOP(analytics?.averageOrderValue || 0)}
+                    </p>
+                    <span className="text-[11px] text-[#627D98] block">Por pedido entregado</span>
+                  </div>
+
+                  {/* Tasa de Cumplimiento */}
+                  <div className="bg-[#FFFFFF] rounded-[12px] border border-[#D9E2EC] p-5 shadow-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#627D98]">Tasa de Efectividad</span>
+                      <div className="w-7 h-7 rounded-[6px] bg-[#EAF5EE] text-[#2F855A] flex items-center justify-center">
+                        <Percent size={15} />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-[#102A43] tabular-nums tracking-tight">
+                      {analytics?.deliveredRate || 0}%
+                    </p>
+                    <span className="text-[11px] text-[#2F855A] font-semibold block">
+                      Concretados en Cereté
+                    </span>
+                  </div>
+                </div>
+
+                {/* HISTÓRICO DE VENTAS MENSUALES (GRÁFICO DE BARRAS INTERACTIVO) */}
+                <div className="bg-[#FFFFFF] rounded-[14px] border border-[#D9E2EC] p-6 shadow-xs space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#F0F4F8] pb-3">
+                    <div>
+                      <h3 className="text-sm font-bold text-[#102A43] flex items-center gap-2">
+                        <TrendingUp size={16} className="text-[#D6A84F]" />
+                        <span>Histórico de Ingresos (Últimos 6 meses)</span>
+                      </h3>
+                      <p className="text-xs text-[#627D98]">
+                        Montos recaudados por pedidos completados en la sede universitaria.
+                      </p>
+                    </div>
+                    <span className="text-[11px] font-semibold text-[#627D98] bg-[#F0F4F8] px-2.5 py-1 rounded-[6px]">
+                      Pesos Colombianos (COP)
+                    </span>
+                  </div>
+
+                  {/* Área del Gráfico de Barras */}
+                  <div className="pt-4">
+                    {(() => {
+                      const months = analytics?.salesByMonth || [];
+                      const maxRevenue = Math.max(...months.map((m) => m.revenue), 1000);
+
+                      return (
+                        <div className="grid grid-cols-6 gap-2 sm:gap-4 items-end h-52 sm:h-60 pt-6 pb-2 border-b border-[#D9E2EC]">
+                          {months.map((m, idx) => {
+                            const heightPercent = Math.max(4, Math.round((m.revenue / maxRevenue) * 100));
+                            return (
+                              <div key={idx} className="flex flex-col items-center h-full justify-end group">
+                                {/* Tooltip con monto */}
+                                <span className="text-[10px] font-bold text-[#102A43] opacity-0 group-hover:opacity-100 transition-opacity mb-1.5 truncate max-w-full">
+                                  {formatCOP(m.revenue)}
+                                </span>
+
+                                {/* Barra */}
+                                <div className="w-full max-w-[48px] bg-[#F0F4F8] rounded-t-[6px] overflow-hidden flex items-end h-full">
+                                  <div
+                                    style={{ height: `${heightPercent}%` }}
+                                    className={`w-full rounded-t-[6px] transition-all duration-500 ${
+                                      m.revenue > 0
+                                        ? 'bg-[#102A43] group-hover:bg-[#D6A84F]'
+                                        : 'bg-[#CBD2D9]'
+                                    }`}
+                                  />
+                                </div>
+
+                                {/* Etiqueta de Mes */}
+                                <span className="text-[11px] font-semibold text-[#627D98] mt-2 block truncate">
+                                  {m.label.split(' ')[0]}
+                                </span>
+                                <span className="text-[9px] text-[#9FB3C8] block">
+                                  {m.ordersCount} {m.ordersCount === 1 ? 'ped.' : 'peds.'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* EMBUDO Y ESTADO DE PEDIDOS */}
+                <div className="bg-[#FFFFFF] rounded-[14px] border border-[#D9E2EC] p-6 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#F0F4F8] pb-3">
+                    <h3 className="text-sm font-bold text-[#102A43] flex items-center gap-2">
+                      <PieChart size={16} className="text-[#102A43]" />
+                      <span>Distribución de Estados de Pedidos ({analytics?.totalOrders || 0})</span>
+                    </h3>
+                    <span className="text-xs text-[#627D98]">Tasa de conversión física</span>
+                  </div>
+
+                  {/* Barra de progreso segmentada */}
+                  {analytics && analytics.totalOrders > 0 ? (
+                    <div className="space-y-4">
+                      <div className="w-full h-3 rounded-full bg-[#F0F4F8] overflow-hidden flex">
+                        {/* Entregados (Verde) */}
+                        <div
+                          style={{
+                            width: `${Math.round((analytics.ordersByStatus.DELIVERED / analytics.totalOrders) * 100)}%`,
+                          }}
+                          className="bg-[#2F855A]"
+                          title={`Entregados: ${analytics.ordersByStatus.DELIVERED}`}
+                        />
+                        {/* Confirmados (Azul) */}
+                        <div
+                          style={{
+                            width: `${Math.round((analytics.ordersByStatus.CONFIRMED / analytics.totalOrders) * 100)}%`,
+                          }}
+                          className="bg-[#243B53]"
+                          title={`Confirmados: ${analytics.ordersByStatus.CONFIRMED}`}
+                        />
+                        {/* Pendientes (Dorado) */}
+                        <div
+                          style={{
+                            width: `${Math.round((analytics.ordersByStatus.PENDING / analytics.totalOrders) * 100)}%`,
+                          }}
+                          className="bg-[#D6A84F]"
+                          title={`Pendientes: ${analytics.ordersByStatus.PENDING}`}
+                        />
+                        {/* Cancelados (Rojo) */}
+                        <div
+                          style={{
+                            width: `${Math.round((analytics.ordersByStatus.CANCELLED / analytics.totalOrders) * 100)}%`,
+                          }}
+                          className="bg-[#C53030]"
+                          title={`Cancelados: ${analytics.ordersByStatus.CANCELLED}`}
+                        />
+                      </div>
+
+                      {/* Tarjetas informativas de los 4 estados */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                        <div className="p-3 rounded-[8px] bg-[#EAF5EE] border border-[#B4E0C4] text-center">
+                          <span className="text-[11px] font-bold text-[#2F855A] block">Entregados</span>
+                          <span className="text-lg font-black text-[#2F855A]">
+                            {analytics.ordersByStatus.DELIVERED}
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-[8px] bg-[#F0F4F8] border border-[#D9E2EC] text-center">
+                          <span className="text-[11px] font-bold text-[#102A43] block">Confirmados</span>
+                          <span className="text-lg font-black text-[#102A43]">
+                            {analytics.ordersByStatus.CONFIRMED}
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-[8px] bg-[#FBF5EA] border border-[#D6A84F]/40 text-center">
+                          <span className="text-[11px] font-bold text-[#8C6517] block">Pendientes</span>
+                          <span className="text-lg font-black text-[#8C6517]">
+                            {analytics.ordersByStatus.PENDING}
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-[8px] bg-[#FDE8E8] border border-[#F8B4B4] text-center">
+                          <span className="text-[11px] font-bold text-[#C53030] block">Cancelados</span>
+                          <span className="text-lg font-black text-[#C53030]">
+                            {analytics.ordersByStatus.CANCELLED}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-[#627D98] text-center py-4">
+                      No hay pedidos registrados para calcular la distribución.
+                    </p>
+                  )}
+                </div>
+
+                {/* TOP PRODUCTOS MÁS VENDIDOS & SALUD DE INVENTARIO (2 Columnas) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Top 5 Productos */}
+                  <div className="bg-[#FFFFFF] rounded-[14px] border border-[#D9E2EC] p-6 shadow-xs space-y-4">
+                    <div className="flex items-center justify-between border-b border-[#F0F4F8] pb-3">
+                      <h3 className="text-sm font-bold text-[#102A43] flex items-center gap-2">
+                        <Award size={16} className="text-[#D6A84F]" />
+                        <span>Artículos Más Demandados</span>
+                      </h3>
+                      <span className="text-[11px] font-semibold text-[#627D98]">Top Ventas</span>
+                    </div>
+
+                    {analytics?.topProducts && analytics.topProducts.length > 0 ? (
+                      <div className="space-y-3">
+                        {analytics.topProducts.map((p, index) => (
+                          <div
+                            key={p.id}
+                            className="flex items-center gap-3 p-3 rounded-[10px] bg-[#F8FAFC] border border-[#D9E2EC] hover:border-[#D6A84F] transition-colors"
+                          >
+                            <span className="w-6 text-center font-black text-sm text-[#102A43]">
+                              {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}°`}
+                            </span>
+
+                            {p.images?.[0] ? (
+                              <img
+                                src={p.images[0]}
+                                alt={p.title}
+                                className="w-11 h-11 object-cover rounded-[8px] border border-[#D9E2EC]"
+                              />
+                            ) : (
+                              <div className="w-11 h-11 rounded-[8px] bg-[#102A43] text-[#D6A84F] font-bold text-xs flex items-center justify-center">
+                                CMP
+                              </div>
+                            )}
+
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-[#102A43] truncate">{p.title}</p>
+                              <p className="text-[11px] text-[#627D98]">
+                                {p.unitsSold} {p.unitsSold === 1 ? 'unidad vendida' : 'unidades vendidas'}
+                              </p>
+                            </div>
+
+                            <div className="text-right shrink-0">
+                              <span className="text-xs font-bold text-[#2F855A] block">
+                                {formatCOP(p.revenue)}
+                              </span>
+                              <span className="text-[10px] text-[#627D98]">Stock: {p.currentStock}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-xs text-[#627D98] space-y-1">
+                        <Package size={24} className="text-[#CBD2D9] mx-auto" />
+                        <p>Aún no se han completado pedidos para rankear productos.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Salud de Inventario y Satisfacción */}
+                  <div className="space-y-6">
+                    {/* Salud de Inventario */}
+                    <div className="bg-[#FFFFFF] rounded-[14px] border border-[#D9E2EC] p-6 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-[#F0F4F8] pb-3">
+                        <h3 className="text-sm font-bold text-[#102A43] flex items-center gap-2">
+                          <Package size={16} className="text-[#102A43]" />
+                          <span>Salud de Inventario en Campus</span>
+                        </h3>
+                        <span className="text-[11px] font-bold text-[#102A43] bg-[#F0F4F8] px-2 py-0.5 rounded-[6px]">
+                          {analytics?.inventoryHealth.totalStockUnits || 0} unidades físicas
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div className="p-3 rounded-[8px] bg-[#EAF5EE] border border-[#B4E0C4]">
+                          <span className="text-[11px] font-bold text-[#2F855A] block">Disponibles</span>
+                          <span className="text-xl font-black text-[#2F855A]">
+                            {analytics?.inventoryHealth.available || 0}
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-[8px] bg-[#FDE8E8] border border-[#F8B4B4]">
+                          <span className="text-[11px] font-bold text-[#C53030] block">Agotados</span>
+                          <span className="text-xl font-black text-[#C53030]">
+                            {analytics?.inventoryHealth.soldOut || 0}
+                          </span>
+                        </div>
+
+                        <div className="p-3 rounded-[8px] bg-[#F0F4F8] border border-[#D9E2EC]">
+                          <span className="text-[11px] font-bold text-[#627D98] block">Pausados</span>
+                          <span className="text-xl font-black text-[#102A43]">
+                            {analytics?.inventoryHealth.paused || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Reseñas y Reputación */}
+                    <div className="bg-[#FFFFFF] rounded-[14px] border border-[#D9E2EC] p-6 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-[#F0F4F8] pb-3">
+                        <h3 className="text-sm font-bold text-[#102A43] flex items-center gap-2">
+                          <Star size={16} className="text-[#D6A84F] fill-[#D6A84F]" />
+                          <span>Reputación del Vendedor</span>
+                        </h3>
+                        <span className="text-xs text-[#627D98]">
+                          {analytics?.reviewsStats.totalReviews || 0} reseñas recibidas
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-5">
+                        <div className="text-center space-y-1 shrink-0">
+                          <p className="text-3xl font-black text-[#102A43]">
+                            {analytics?.reviewsStats.averageRating || '5.0'}
+                          </p>
+                          <div className="flex items-center justify-center gap-0.5 text-[#D6A84F]">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star key={star} size={14} className="fill-[#D6A84F]" />
+                            ))}
+                          </div>
+                          <span className="text-[10px] text-[#627D98] block">Calificación general</span>
+                        </div>
+
+                        <div className="flex-1 space-y-1.5 text-xs">
+                          {[5, 4, 3, 2, 1].map((stars) => {
+                            const count =
+                              (analytics?.reviewsStats.ratingBreakdown as any)?.[stars] || 0;
+                            const total = analytics?.reviewsStats.totalReviews || 0;
+                            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+
+                            return (
+                              <div key={stars} className="flex items-center gap-2">
+                                <span className="w-5 text-[11px] font-semibold text-[#627D98]">{stars}★</span>
+                                <div className="flex-1 h-2 rounded-full bg-[#F0F4F8] overflow-hidden">
+                                  <div
+                                    style={{ width: `${pct}%` }}
+                                    className="h-full bg-[#D6A84F] rounded-full"
+                                  />
+                                </div>
+                                <span className="w-6 text-[10px] text-[#9FB3C8] text-right">{count}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </main>

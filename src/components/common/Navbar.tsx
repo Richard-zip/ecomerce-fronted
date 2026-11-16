@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Store,
   Plus,
+  Compass,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -75,7 +76,15 @@ export const Navbar: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-3">
+            <Link
+              to="/requests"
+              className="text-xs font-semibold text-[#D9E2EC] hover:text-[#FFFFFF] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] hover:bg-[#243B53] border border-transparent hover:border-[#334E68]"
+            >
+              <Compass size={15} className="text-[#D6A84F]" />
+              <span>Mural "Se Busca"</span>
+            </Link>
+
             {isAuthenticated && isSeller && (
               <>
                 <Link
@@ -332,6 +341,15 @@ export const Navbar: React.FC = () => {
           )}
 
           <div className="space-y-1">
+            <Link
+              to="/requests"
+              onClick={() => setIsMenuOpen(false)}
+              className="block px-3 py-2 rounded-[8px] text-sm font-semibold text-[#D6A84F] bg-[#163350] border border-[#334E68] flex items-center gap-2 mb-2"
+            >
+              <Compass size={16} />
+              <span>Mural "¿Qué Buscas en Campus?"</span>
+            </Link>
+
             {isAuthenticated && isSeller && (
               <>
                 <Link

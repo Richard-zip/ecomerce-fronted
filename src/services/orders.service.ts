@@ -1,5 +1,5 @@
 import { api } from './api';
-import { ApiResponse, Order, OrderStatus, Review } from '../types';
+import { ApiResponse, Order, OrderStatus, Review, SellerAnalytics } from '../types';
 
 export interface CreateOrderPayload {
   items: {
@@ -50,6 +50,11 @@ export const ordersService = {
 
   async createReview(payload: CreateReviewPayload): Promise<Review> {
     const res = await api.post<ApiResponse<Review>>('/orders/reviews', payload);
+    return res.data;
+  },
+
+  async getSellerAnalytics(): Promise<SellerAnalytics> {
+    const res = await api.get<ApiResponse<SellerAnalytics>>('/orders/seller/analytics');
     return res.data;
   },
 };
