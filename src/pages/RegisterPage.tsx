@@ -175,7 +175,7 @@ export const RegisterPage: React.FC = () => {
             Campus<span className="text-[#D6A84F]">Market</span> • Cereté
           </span>
           <h2 className="text-2xl font-bold text-[#102A43] tracking-tight">
-            Crear Cuenta Estudiantil
+            Crear Cuenta 
           </h2>
           <p className="text-sm text-[#627D98] leading-relaxed">
             Regístrate en CampusMarket Cereté con tu correo y datos de contacto.

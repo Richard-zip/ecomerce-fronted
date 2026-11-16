@@ -166,11 +166,13 @@ export const Navbar: React.FC = () => {
                 {/* Dropdown Menu */}
                 {isProfileDropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-[#D9E2EC] bg-white shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100"
+                    className="absolute right-0 mt-2 w-[280px] max-w-[calc(100vw-2rem)] rounded-[12px] border border-[#D9E2EC] bg-white shadow-md overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100"
                     onClick={() => setIsProfileDropdownOpen(false)}
+                    role="menu"
+                    aria-label="Menú de usuario"
                   >
-                    {/* Encabezado: Avatar, nombre y rol juntos en una sola fila */}
-                    <div className="p-3.5 border-b border-[#D9E2EC] bg-white">
+                    {/* Encabezado: Avatar con inicial, nombre y badge Vendedor */}
+                    <div className="px-3.5 py-3 border-b border-[#D9E2EC] bg-white">
                       <div className="flex items-center gap-2.5">
                         {user.avatar ? (
                           <img
@@ -180,88 +182,73 @@ export const Navbar: React.FC = () => {
                           />
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-[#102A43] text-[#D6A84F] font-bold flex items-center justify-center text-xs shrink-0 border border-[#D9E2EC]">
-                            {user.name.charAt(0).toUpperCase()}
+                            {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                           </div>
                         )}
                         <div className="min-w-0 flex-1 flex items-center justify-between gap-1.5">
-                          <span className="font-bold text-sm text-[#102A43] truncate leading-tight">
+                          <span className="font-bold text-sm text-[#102A43] truncate leading-tight" title={user.name}>
                             {user.name}
                           </span>
-                          <span className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F0F4F8] text-[#102A43] border border-[#D9E2EC]">
-                            {user.role === 'VENDEDOR' ? 'Vendedor' : 'Estudiante'}
-                          </span>
+                          {(isSeller || user.role === 'VENDEDOR') && (
+                            <span className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FBF5EA] text-[#8C6517] border border-[#D6A84F]/40">
+                              Vendedor
+                            </span>
+                          )}
                         </div>
-                      </div>
-
-                      {/* Correo en una sola línea con truncado */}
-                      <div className="mt-2 pt-2 border-t border-[#F0F4F8] flex items-center gap-1.5 text-xs text-[#627D98] overflow-hidden">
-                        <span className="shrink-0 text-[11px] font-medium text-[#627D98]">Conectado como:</span>
-                        <span className="truncate text-[11px] font-semibold text-[#1F2933]" title={user.email}>
-                          {user.email}
-                        </span>
                       </div>
                     </div>
 
-                    {/* Accesos: filas con min-h-11, px-4, texto #243B53 y hover #F5F7FA */}
-                    <div className="py-1">
-                      {isSeller && (
-                        <>
-                          <Link
-                            to="/seller"
-                            className="flex min-h-11 items-center gap-3 px-4 text-sm font-medium text-[#243B53] hover:bg-[#F5F7FA] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
-                          >
-                            <div className="w-5 flex justify-center shrink-0">
-                              <LayoutDashboard size={18} className="text-[#102A43]" />
-                            </div>
-                            <span>Panel de Ventas</span>
-                          </Link>
+                    {/* Opciones: Panel de ventas, Publicar producto (destacado), Mi perfil */}
+                    <div className="p-1.5 space-y-0.5" role="none">
+                      <Link
+                        to="/seller"
+                        role="menuitem"
+                        className="flex h-10 items-center gap-2.5 px-2.5 text-xs font-medium text-[#243B53] hover:bg-[#F5F7FA] hover:text-[#102A43] rounded-[8px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
+                      >
+                        <div className="w-5 flex justify-center shrink-0">
+                          <LayoutDashboard size={16} className="text-[#102A43]" />
+                        </div>
+                        <span>Panel de ventas</span>
+                      </Link>
 
-                          <Link
-                            to="/seller?action=new"
-                            className="flex min-h-11 items-center gap-3 px-4 text-sm font-semibold text-[#102A43] hover:bg-[#F5F7FA] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
-                          >
-                            <div className="w-5 flex justify-center shrink-0">
-                              <Plus size={18} className="text-[#D6A84F]" />
-                            </div>
-                            <span>Publicar Nuevo Producto</span>
-                          </Link>
-                        </>
-                      )}
-
-                      {!isSeller && (
-                        <Link
-                          to="/orders"
-                          className="flex min-h-11 items-center gap-3 px-4 text-sm font-medium text-[#243B53] hover:bg-[#F5F7FA] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
-                        >
+                      <Link
+                        to="/seller?action=new"
+                        role="menuitem"
+                        className="flex h-10 items-center justify-between px-2.5 text-xs font-semibold text-[#102A43] bg-[#F0F4F8] hover:bg-[#E2E8F0] border border-[#D6A84F]/30 rounded-[8px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
+                      >
+                        <div className="flex items-center gap-2.5">
                           <div className="w-5 flex justify-center shrink-0">
-                            <PackageCheck size={18} className="text-[#102A43]" />
+                            <Plus size={16} className="text-[#D6A84F]" />
                           </div>
-                          <span>Mis Compras / Reservas</span>
-                        </Link>
-                      )}
+                          <span>Publicar producto</span>
+                        </div>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#D6A84F] shrink-0" aria-hidden="true" />
+                      </Link>
 
                       <Link
                         to="/profile"
-                        className="flex min-h-11 items-center gap-3 px-4 text-sm font-medium text-[#243B53] hover:bg-[#F5F7FA] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
+                        role="menuitem"
+                        className="flex h-10 items-center gap-2.5 px-2.5 text-xs font-medium text-[#243B53] hover:bg-[#F5F7FA] hover:text-[#102A43] rounded-[8px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] focus-visible:ring-inset"
                       >
                         <div className="w-5 flex justify-center shrink-0">
-                          <UserIcon size={18} className="text-[#102A43]" />
+                          <UserIcon size={16} className="text-[#102A43]" />
                         </div>
-                        <span>Mi Perfil Cereté</span>
+                        <span>Mi perfil</span>
                       </Link>
-                    </div>
 
-                    {/* Separación y Cierre de Sesión con rojo reservado */}
-                    <div className="border-t border-[#D9E2EC] py-1">
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex min-h-11 items-center gap-3 px-4 text-sm font-semibold text-[#C53030] hover:bg-[#FDE8E8]/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C53030] focus-visible:ring-inset text-left"
-                      >
-                        <div className="w-5 flex justify-center shrink-0">
-                          <LogOut size={18} className="text-[#C53030]" />
-                        </div>
-                        <span>Cerrar Sesión</span>
-                      </button>
+                      {/* Separador y Cerrar sesión con rojo moderado */}
+                      <div className="pt-1 mt-1 border-t border-[#D9E2EC]" role="none">
+                        <button
+                          onClick={handleLogout}
+                          role="menuitem"
+                          className="w-full flex h-10 items-center gap-2.5 px-2.5 text-xs font-semibold text-[#C53030] hover:bg-[#FDE8E8]/50 rounded-[8px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C53030] focus-visible:ring-inset text-left"
+                        >
+                          <div className="w-5 flex justify-center shrink-0">
+                            <LogOut size={16} className="text-[#C53030]" />
+                          </div>
+                          <span>Cerrar sesión</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
