@@ -11,6 +11,7 @@ import { parseCOP } from '../utils/format';
 import {
   Sparkles,
   ShoppingBag,
+  Plus,
   MapPin,
   ChevronLeft,
   ChevronRight,
@@ -124,25 +125,45 @@ export const HomePage: React.FC = () => {
   return (
     <div className="min-w-0 pb-16">
       {/* Hero Banner Universitario */}
-      <section className="relative overflow-hidden bg-[#102A43] text-white py-12 px-4 sm:px-6 lg:px-8 border-b border-[#243B53]">
+      <section className="relative overflow-hidden bg-[#102A43] text-white py-8 sm:py-10 px-4 sm:px-6 lg:px-8 border-b border-[#243B53]">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-[#243B53] border border-[#D6A84F]/40 text-[#D6A84F] text-xs font-semibold mb-4">
-              <Sparkles size={13} className="text-[#D6A84F]" />
-              <span>Mercado • Centro Tutorial Cereté</span>
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-[#243B53] border border-[#D6A84F]/40 text-[#D6A84F] text-xs font-semibold mb-3">
+              <Sparkles size={13} className="text-[#D6A84F] shrink-0" />
+              <span>Compra local · Centro Tutorial Cereté</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
-              Compra y vende con compañeros en el <span className="text-[#D6A84F]">Centro Tutorial Cereté</span>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight max-w-xl">
+              Lo que necesitas, <span className="text-[#D6A84F]">entre estudiantes.</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-[#D9E2EC] leading-relaxed font-normal">
-              Libros, calculadoras, útiles, tecnología y más en pesos colombianos (COP). Todos los pedidos se coordinan y se recogen directamente en las instalaciones del Centro Tutorial Cereté.
+            <p className="mt-2.5 sm:mt-3 text-sm sm:text-base text-[#D9E2EC] leading-relaxed font-normal max-w-xl">
+              Compra y vende en el Centro Tutorial Cereté. Fácil, cerca y entre compañeros.
             </p>
+            <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <a
+                href="#catalogo-productos"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('catalogo-productos')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] bg-[#D6A84F] hover:bg-[#C99A40] text-[#102A43] font-bold text-xs sm:text-sm shadow-xs transition-colors"
+              >
+                <ShoppingBag size={16} />
+                <span>Explorar productos</span>
+              </a>
+              <Link
+                to={isAuthenticated && isSeller ? '/seller?action=new' : isAuthenticated ? '/seller' : '/login'}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] bg-[#243B53] hover:bg-[#1B2D3F] border border-[#334E68] hover:border-[#D6A84F] text-white font-semibold text-xs sm:text-sm shadow-xs transition-colors"
+              >
+                <Plus size={16} className="text-[#D6A84F]" />
+                <span>Publicar producto</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-6">
+      <div id="catalogo-productos" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 space-y-6">
         {/* Showcase Visual de Categorías Universitarias */}
         {categories.length > 0 && (
           <section className="bg-[#FFFFFF] border border-[#D9E2EC] rounded-[12px] p-5 shadow-xs space-y-3">
